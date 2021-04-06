@@ -56,7 +56,7 @@ def get_assignment_names(grades):
     # get discussion
     discussion = col[col.str.len() == 12]
     discussion = discussion[discussion.str.contains('discussion')]
-    ans['discussion'] = discussion.tolist()
+    ans['disc'] = discussion.tolist()
 
     # get checkpoint
     checkpoint = col[col.str.contains('checkpoint')]
@@ -91,14 +91,14 @@ def projects_total(grades):
     col = grades.columns
     project = col[col.str.len() == 9]
     project = project[project.str.contains('project')]
-    proj_grades = grades[project].sum(axis = 1)
+    proj_grades = grades[project].sum(axis=1)
 
     project_max = col[col.str.contains('project')]
     project_max = project_max[project_max.str.len() == 22]
     project_max = project_max[project_max.str.contains('Max')]
     max_score = grades[project_max].iloc[0].sum()
 
-    return proj_grades / max_score * 0.3
+    return proj_grades / max_score
 
 
 # ---------------------------------------------------------------------
@@ -124,8 +124,24 @@ def last_minute_submissions(grades):
     >>> (out > 0).sum()
     8
     """
+    # get all labs
+    lab_assignments = get_assignment_names(grades)['lab']
 
-    return ...
+    data = {}
+    for lab in lab_assignments:
+        # get stats of the current lab
+        lab_stats = grades.columns.str.contains(lab)
+        lab_late = grades.columns[lab_stats]
+
+        # shrink the dataframe by selecting lateness of submission that are small
+        cur_df = pd.DataFrame(grades, columns=lab_late)
+        cur_df = cur_df[cur_df[lab + ' - Lateness (H:M:S)'] != '00:00:00']
+        cur_df = cur_df[cur_df[lab + ' - Lateness (H:M:S)'].str.slice(0, 1) == '0']
+
+        # assign the number of those submissions to the current lab key
+        data[lab] = cur_df.shape[0]
+    ser = pd.Series(data)
+    return ser
 
 
 # ---------------------------------------------------------------------
