@@ -86,7 +86,19 @@ def projects_total(grades):
     >>> 0.7 < out.mean() < 0.9
     True
     '''
-    return ...
+    grades.fillna(0)
+
+    col = grades.columns
+    project = col[col.str.len() == 9]
+    project = project[project.str.contains('project')]
+    proj_grades = grades[project].sum(axis = 1)
+
+    project_max = col[col.str.contains('project')]
+    project_max = project_max[project_max.str.len() == 22]
+    project_max = project_max[project_max.str.contains('Max')]
+    max_score = grades[project_max].iloc[0].sum()
+
+    return proj_grades / max_score * 0.3
 
 
 # ---------------------------------------------------------------------
