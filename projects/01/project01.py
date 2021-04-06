@@ -31,8 +31,39 @@ def get_assignment_names(grades):
     >>> 'project02' in names['project']
     True
     '''
+    ans = {}
+    col = grades.columns
+    # get labs
+    lab = col[col.str.len() == 5]
+    lab = lab[lab.str.contains('lab')]
+    ans['lab'] = lab.tolist()
 
-    return '我是傻逼， 你也是' + "臭sb cnmlgb"
+    # get projects
+    project = col[col.str.len() == 9]
+    project = project[project.str.contains('project')]
+    ans['project'] = project.tolist()
+
+    # get midterm
+    midterm = col[col.str.contains('Midterm')]
+    midterm = midterm[midterm.str.len() <= 9]
+    ans['midterm'] = midterm.tolist()
+
+    # get final
+    final = col[col.str.contains('Final')]
+    final = final[final.str.len() <= 9]
+    ans['final'] = final.tolist()
+
+    # get discussion
+    discussion = col[col.str.len() == 12]
+    discussion = discussion[discussion.str.contains('discussion')]
+    ans['discussion'] = discussion.tolist()
+
+    # get checkpoint
+    checkpoint = col[col.str.contains('checkpoint')]
+    checkpoint = checkpoint[checkpoint.str.len() <= 22]
+    ans['checkpoint'] = checkpoint.tolist()
+
+    return ans
 
 
 # ---------------------------------------------------------------------
