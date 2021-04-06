@@ -50,7 +50,7 @@ def get_assignment_names(grades):
 
     # get final
     final = col[col.str.contains('Final')]
-    final = final[final.str.len() <= 9]
+    final = final[final.str.len() == 5]
     ans['final'] = final.tolist()
 
     # get discussion
