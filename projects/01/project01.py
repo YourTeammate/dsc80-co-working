@@ -163,7 +163,20 @@ def lateness_penalty(col):
     True
     """
 
-    return ...
+    def lateness_penalty_helper(late_str):
+        hrs_late = int(late_str.split(':')[0])
+        if hrs_late == 0:
+            return 1.0
+        # within one week
+        if hrs_late < (24 * 7):
+            return 0.9
+        # within two weeks
+        if hrs_late < (24 * 14):
+            return 0.7
+        # later than two weeks
+        return 0.4
+
+    return col.apply(lateness_penalty_helper)
 
 
 # ---------------------------------------------------------------------
