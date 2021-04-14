@@ -86,6 +86,7 @@ def projects_total(grades):
     >>> 0.7 < out.mean() < 0.9
     True
     '''
+
     max_s = ' - Max Points'
     projects = get_assignment_names(grades)['project']
     project_df = pd.DataFrame()
@@ -98,7 +99,7 @@ def projects_total(grades):
             scores = grades[project] / grades[project + max_s]
         project_df[project] = scores
 
-    return project_df.mean(axis = 1)
+    return project_df.fillna(0).mean(axis = 1)
 
 
 # ---------------------------------------------------------------------
