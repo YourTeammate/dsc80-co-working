@@ -210,10 +210,7 @@ def process_labs(grades):
     for lab in labs:
         adjust = lateness_penalty(grades[lab + ' - Lateness (H:M:S)'])
         scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
-        #scores = (grades[lab] / grades[lab + ' - Max Points'])
         ans[lab] = scores
-
-    ans = ans.fillna(0)
 
     return ans
 
@@ -237,7 +234,7 @@ def lab_total(processed):
     True
     """
 
-    return pd.Series(np.mean(np.sort(processed.values, axis = 1)[:, 1:], axis = 1))
+    return pd.Series(np.mean(np.sort(processed.fillna(0).values, axis = 1)[:, 1:], axis = 1))
 
 
 # ---------------------------------------------------------------------
@@ -413,8 +410,6 @@ def total_points_with_noise(grades):
             scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
             noise = np.random.normal(0, 0.02, size=len(scores))
             ans[lab] = np.clip(scores + noise, 0, 1)
-
-        ans = ans.fillna(0)
 
         return ans
 
