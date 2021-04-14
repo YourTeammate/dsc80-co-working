@@ -373,7 +373,68 @@ def total_points_with_noise(grades):
     True
     """
 
-    return ...
+    # project points with noise
+    def projects_total_noise(grades):
+        max_s = ' - Max Points'
+        projects = get_assignment_names(grades)['project']
+        project_df = pd.DataFrame()
+
+        for project in projects:
+            free_res = project + '_free_response'
+            if free_res in grades.columns:
+                scores = (grades[project] + grades[free_res]) / (grades[project + max_s] + grades[free_res + max_s])
+            else:
+                scores = grades[project] / grades[project + max_s]
+            noise = np.random.normal(0, 0.02, size=len(scores))
+            project_df[project] = np.clip(scores + noise, 0, 1)
+
+        return project_df.fillna(0).mean(axis = 1)
+
+    # lab points with noise
+    def process_labs_noise(grades):
+        ans = pd.DataFrame()
+        labs = get_assignment_names(grades)['lab']
+
+        for lab in labs:
+            adjust = lateness_penalty(grades[lab + ' - Lateness (H:M:S)'])
+            scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
+            noise = np.random.normal(0, 0.02, size=len(scores))
+            ans[lab] = np.clip(scores + noise, 0, 1)
+
+        ans = ans.fillna(0)
+
+        return ans
+
+    # checkpoint and discussion with noise
+    def ckpt_di_helper_noise(grades, item):
+        max_s = ' - Max Points'
+        items = get_assignment_names(grades)[item]
+        df = pd.DataFrame()
+
+        for item in items:
+            scores = grades[item] / grades[item + max_s]
+            noise = np.random.normal(0, 0.02, size=len(scores))
+            df[item] = np.clip(scores + noise, 0, 1)
+
+        return df.fillna(0).mean(axis = 1)
+
+    max_s = ' - Max Points'
+
+    project_sc = projects_total_noise(grades)
+    lab_sc = lab_total(process_labs_noise(grades))
+    di_sc = ckpt_di_helper_noise(grades, 'disc')
+    ckpt_sc = ckpt_di_helper_noise(grades, 'checkpoint')
+
+    noise = np.random.normal(0, 0.02, size=len(grades['Midterm']))
+    mid_sc = grades['Midterm'] / grades['Midterm' + max_s]
+    mid_sc = np.clip(mid_sc.fillna(0) + noise, 0, 1)
+
+    noise = np.random.normal(0, 0.02, size=len(grades['Final']))
+    final_sc = grades['Final'] / grades['Final' + max_s]
+    final_sc = np.clip(final_sc.fillna(0) + noise, 0, 1)
+
+    return project_sc * 0.3 + lab_sc * 0.2 + di_sc * 0.025 + ckpt_sc * 0.025 + \
+        mid_sc * 0.15 + final_sc * 0.3
 
 
 # ---------------------------------------------------------------------
