@@ -202,7 +202,16 @@ def process_labs(grades):
     True
     """
 
-    return ...
+    ans = pd.DataFrame()
+
+    labs = get_assignment_names(grades)['lab']
+
+    for lab in labs:
+        adjust = lateness_penalty(grades[lab + ' - Lateness (H:M:S)'])
+        scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
+        ans[lab] = scores
+
+    return ans
 
 
 # ---------------------------------------------------------------------
