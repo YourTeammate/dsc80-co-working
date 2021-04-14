@@ -86,19 +86,19 @@ def projects_total(grades):
     >>> 0.7 < out.mean() < 0.9
     True
     '''
-    grades.fillna(0)
+    max_s = ' - Max Points'
+    projects = get_assignment_names(grades)['project']
+    project_df = pd.DataFrame()
 
-    col = grades.columns
-    project = col[col.str.len() == 9]
-    project = project[project.str.contains('project')]
-    proj_grades = grades[project].sum(axis=1)
+    for project in projects:
+        free_res = project + '_free_response'
+        if free_res in grades.columns:
+            scores = (grades[project] + grades[free_res]) / (grades[project + max_s] + grades[free_res + max_s])
+        else:
+            scores = grades[project] / grades[project + max_s]
+        project_df[project] = scores
 
-    project_max = col[col.str.contains('project')]
-    project_max = project_max[project_max.str.len() == 22]
-    project_max = project_max[project_max.str.contains('Max')]
-    max_score = grades[project_max].iloc[0].sum()
-
-    return proj_grades / max_score
+    return project_df.mean(axis = 1)
 
 
 # ---------------------------------------------------------------------
@@ -257,6 +257,7 @@ def total_points(grades):
     >>> 0.7 < out.mean() < 0.9
     True
     """
+
 
     return ...
 
