@@ -166,7 +166,7 @@ def lateness_penalty(col):
 
     def lateness_penalty_helper(late_str):
         hrs_late = int(late_str.split(':')[0])
-        if hrs_late == 0:
+        if hrs_late < 10:
             return 1.0
         # within one week
         if hrs_late < (24 * 7):
@@ -210,6 +210,7 @@ def process_labs(grades):
     for lab in labs:
         adjust = lateness_penalty(grades[lab + ' - Lateness (H:M:S)'])
         scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
+        #scores = (grades[lab] / grades[lab + ' - Max Points'])
         ans[lab] = scores
 
     ans = ans.fillna(0)
