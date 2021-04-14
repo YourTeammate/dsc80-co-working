@@ -295,7 +295,18 @@ def final_grades(total):
     True
     """
 
-    return ...
+    def check_final_grade(num_grade):
+        if num_grade >= 0.90:
+            return 'A'
+        if num_grade >= 0.80:
+            return 'B'
+        if num_grade >= 0.70:
+            return 'C'
+        if num_grade >= 0.60:
+            return 'D'
+        return 'F'
+
+    return total.apply(check_final_grade)
 
 
 def letter_proportions(grades):
