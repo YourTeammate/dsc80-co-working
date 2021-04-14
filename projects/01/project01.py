@@ -211,6 +211,8 @@ def process_labs(grades):
         scores = (grades[lab] / grades[lab + ' - Max Points']) * adjust
         ans[lab] = scores
 
+    ans = ans.fillna(0)
+
     return ans
 
 
@@ -233,7 +235,7 @@ def lab_total(processed):
     True
     """
 
-    return ...
+    return pd.Series(np.mean(np.sort(processed.values, axis = 1)[:, 1:], axis = 1))
 
 
 # ---------------------------------------------------------------------
