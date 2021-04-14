@@ -348,8 +348,20 @@ def simulate_pval(grades, N):
     >>> 0 <= out <= 0.1
     True
     """
+    year_ser = grades['Level']
+    grades_student = pd.Series(total_points(grades), name="Total")
+    new_df = pd.concat([year_ser, grades_student], axis=1)
 
-    return ...
+    sr_num = (new_df['Level'] == 'SR').sum()
+    observed_stat = new_df[new_df["Level"] == "SR"].get("Total").mean()
+
+    averages = []
+    for i in np.arange(N):
+        random_sample = new_df['Total'].sample(sr_num, replace=False)
+        stat = np.mean(random_sample)
+        averages.append(stat)
+
+    return (pd.Series(averages) <= observed_stat).mean()
 
 
 # ---------------------------------------------------------------------
