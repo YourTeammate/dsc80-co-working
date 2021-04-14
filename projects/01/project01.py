@@ -258,9 +258,29 @@ def total_points(grades):
     >>> 0.7 < out.mean() < 0.9
     True
     """
+    def ckpt_di_helper(grades, item):
+        max_s = ' - Max Points'
+        items = get_assignment_names(grades)[item]
+        df = pd.DataFrame()
 
+        for item in items:
+            scores = grades[item] / grades[item + max_s]
+            df[item] = scores
 
-    return ...
+        return df.fillna(0).mean(axis = 1)
+
+    max_s = ' - Max Points'
+    project_sc = projects_total(grades)
+    lab_sc = lab_total(process_labs(grades))
+    di_sc = ckpt_di_helper(grades, 'disc')
+    ckpt_sc = ckpt_di_helper(grades, 'checkpoint')
+    mid_sc = grades['Midterm'] / grades['Midterm' + max_s]
+    mid_sc = mid_sc.fillna(0)
+    final_sc = grades['Final'] / grades['Final' + max_s]
+    final_sc = final_sc.fillna(0)
+
+    return project_sc * 0.3 + lab_sc * 0.2 + di_sc * 0.025 + ckpt_sc * 0.025 + \
+        mid_sc * 0.15 + final_sc * 0.3
 
 
 def final_grades(total):
