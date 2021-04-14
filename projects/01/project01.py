@@ -325,7 +325,9 @@ def letter_proportions(grades):
     True
     """
 
-    return ...
+    letter_grades = final_grades(total_points(grades))
+
+    return letter_grades.value_counts() / len(letter_grades)
 
 # ---------------------------------------------------------------------
 # Question # 8
