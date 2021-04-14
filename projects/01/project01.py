@@ -475,7 +475,7 @@ def short_answer():
     True
     """
 
-    return ...
+    return [-0.0009, 83.31, [80.18, 86.17], 0.06758, [True, True]]
 
 # ---------------------------------------------------------------------
 # DO NOT TOUCH BELOW THIS LINE
