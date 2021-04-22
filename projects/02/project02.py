@@ -52,7 +52,15 @@ def get_sw_jb(infp, outfp):
     >>> os.remove(outfp)
     """
 
-    return ...
+    L = pd.read_csv(infp, chunksize=1000)
+    df = next(L)
+    fil_df = df[(df['AIRLINE'] == 'B6') | (df['AIRLINE'] == 'WN')]
+    fil_df.to_csv(outfp, mode='a', index=False)
+    for df in L:
+        fil_df = df[(df['AIRLINE'] == 'B6') | (df['AIRLINE'] == 'WN')]
+        fil_df.to_csv(outfp, mode='a', index=False, header=False)
+
+    return None
 
 
 # ---------------------------------------------------------------------
