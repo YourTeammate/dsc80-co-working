@@ -80,7 +80,14 @@ def data_kinds():
     True
     """
 
-    return ...
+    return {'YEAR':'O', 'MONTH':'O', 'DAY':'O', 'DAY_OF_WEEK':'O', 'AIRLINE':'N', 'FLIGHT_NUMBER':'N',
+       'TAIL_NUMBER':'N', 'ORIGIN_AIRPORT':'N', 'DESTINATION_AIRPORT':'N',
+       'SCHEDULED_DEPARTURE':'O', 'DEPARTURE_TIME':'Q', 'DEPARTURE_DELAY':'Q', 'TAXI_OUT':'Q',
+       'WHEELS_OFF':'Q', 'SCHEDULED_TIME':'O', 'ELAPSED_TIME':'Q', 'AIR_TIME':'Q', 'DISTANCE':'Q',
+       'WHEELS_ON':'Q', 'TAXI_IN':'Q', 'SCHEDULED_ARRIVAL':'O', 'ARRIVAL_TIME':'O',
+       'ARRIVAL_DELAY':'Q', 'DIVERTED':'N', 'CANCELLED':'N', 'CANCELLATION_REASON':'N',
+       'AIR_SYSTEM_DELAY':'Q', 'SECURITY_DELAY':'Q', 'AIRLINE_DELAY':'Q',
+       'LATE_AIRCRAFT_DELAY':'Q', 'WEATHER_DELAY':'Q'}
 
 
 def data_types():
@@ -96,7 +103,14 @@ def data_types():
     True
     """
 
-    return ...
+    return {'YEAR':'int', 'MONTH':'int', 'DAY':'int', 'DAY_OF_WEEK':'int', 'AIRLINE':'str', 'FLIGHT_NUMBER':'int',
+       'TAIL_NUMBER':'str', 'ORIGIN_AIRPORT':'str', 'DESTINATION_AIRPORT':'str',
+       'SCHEDULED_DEPARTURE':'int', 'DEPARTURE_TIME':'float', 'DEPARTURE_DELAY':'float', 'TAXI_OUT':'float',
+       'WHEELS_OFF':'float', 'SCHEDULED_TIME':'int', 'ELAPSED_TIME':'float', 'AIR_TIME':'float', 'DISTANCE':'int',
+       'WHEELS_ON':'float', 'TAXI_IN':'float', 'SCHEDULED_ARRIVAL':'int', 'ARRIVAL_TIME':'float',
+       'ARRIVAL_DELAY':'float', 'DIVERTED':'bool', 'CANCELLED':'bool', 'CANCELLATION_REASON':'str',
+       'AIR_SYSTEM_DELAY':'float', 'SECURITY_DELAY':'float', 'AIRLINE_DELAY':'float',
+       'LATE_AIRCRAFT_DELAY':'float', 'WEATHER_DELAY':'float'}
 
 
 # ---------------------------------------------------------------------
@@ -131,7 +145,34 @@ def basic_stats(flights):
     >>> out.columns.tolist() == cols
     True
     """
-    return ...
+    count = pd.Series([flights.groupby('DESTINATION_AIRPORT').count()['YEAR'].loc['SAN'],
+                       flights.groupby('ORIGIN_AIRPORT').count()['YEAR'].loc['SAN']]).rename('count')
+
+    mean_delay = pd.Series(
+        [flights.groupby('DESTINATION_AIRPORT').aggregate({'ARRIVAL_DELAY': np.mean})['ARRIVAL_DELAY'].loc['SAN'],
+         flights.groupby('ORIGIN_AIRPORT').aggregate({'ARRIVAL_DELAY': np.mean})['ARRIVAL_DELAY'].loc[
+             'SAN']]).rename('mean_delay')
+
+    median_delay = pd.Series(
+        [flights.groupby('DESTINATION_AIRPORT').aggregate({'ARRIVAL_DELAY': np.median})['ARRIVAL_DELAY'].loc['SAN'],
+         flights.groupby('ORIGIN_AIRPORT').aggregate({'ARRIVAL_DELAY': np.median})['ARRIVAL_DELAY'].loc[
+             'SAN']]).rename('median_delay')
+
+    airline_dep = flights.groupby(['ORIGIN_AIRPORT', 'AIRLINE']).aggregate({'ARRIVAL_DELAY': np.max}). \
+        loc['SAN'].sort_values('ARRIVAL_DELAY').index[-1]
+    airline_arr = flights.groupby(['DESTINATION_AIRPORT', 'AIRLINE']).aggregate({'ARRIVAL_DELAY': np.max}). \
+        loc['SAN'].sort_values('ARRIVAL_DELAY').index[-1]
+    airline = pd.Series([airline_arr, airline_dep]).rename('airline')
+
+    months_dep = flights[flights['ORIGIN_AIRPORT'] == 'SAN'].groupby('MONTH').count().sort_values('YEAR',
+                 ascending=False).index[:3].tolist()
+    months_arr = flights[flights['DESTINATION_AIRPORT'] == 'SAN'].groupby('MONTH').count().sort_values('YEAR',
+                 ascending=False).index[:3].tolist()
+    top_months = pd.Series([months_dep, months_arr]).rename('top_months')
+
+    stats = pd.concat([count, mean_delay, median_delay, airline, top_months], axis=1)
+    stats.index = ['ARRIVING', 'DEPARTING']
+    return stats
 
 
 # ---------------------------------------------------------------------
