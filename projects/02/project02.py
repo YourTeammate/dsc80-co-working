@@ -204,7 +204,11 @@ def depart_arrive_stats(flights):
     True
     """
 
-    return ...
+    late1 = ((flights['DEPARTURE_DELAY'] > 0) & (flights['ARRIVAL_DELAY'] < 0)).mean()
+    late2 = ((flights['DEPARTURE_DELAY'] <= 0) & (flights['ARRIVAL_DELAY'] > 0)).mean()
+    late3 = ((flights['DEPARTURE_DELAY'] > 0) & (flights['ARRIVAL_DELAY'] > 0)).mean()
+
+    return pd.Series({'late1': late1, 'late2': late2, 'late3': late3})
 
 
 def depart_arrive_stats_by_month(flights):
@@ -223,7 +227,7 @@ def depart_arrive_stats_by_month(flights):
     True
     """
 
-    return ...
+    return flights.groupby('MONTH').apply(depart_arrive_stats)
 
 
 # ---------------------------------------------------------------------
@@ -248,7 +252,10 @@ def cnts_by_airline_dow(flights):
     True
     """
 
-    return ...
+    counts = flights.groupby(['DAY_OF_WEEK', 'AIRLINE'], as_index=False)['FLIGHT_NUMBER'].count()
+
+    return counts.pivot(index='DAY_OF_WEEK', columns='AIRLINE', values='FLIGHT_NUMBER')
+
 
 
 def mean_by_airline_dow(flights):
@@ -268,7 +275,9 @@ def mean_by_airline_dow(flights):
     True
     """
 
-    return ...
+    avgs = flights.groupby(['DAY_OF_WEEK', 'AIRLINE'], as_index=False)['ARRIVAL_DELAY'].mean()
+
+    return avgs.pivot(index='DAY_OF_WEEK', columns='AIRLINE', values='ARRIVAL_DELAY')
 
 
 # ---------------------------------------------------------------------
