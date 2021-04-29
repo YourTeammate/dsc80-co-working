@@ -440,7 +440,7 @@ def prop_delayed_by_airline(jb_sw):
     airports_set = set(['ABQ', 'BDL', 'BUR', 'DCA', 'MSY', 'PBI', 'PHX', 'RNO', 'SJC', 'SLC'])
     jb_sw = jb_sw[jb_sw['ORIGIN_AIRPORT'].apply(lambda x: x in airports_set)]
 
-    jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
+    jb_sw_p = jb_sw.assign(delayed=((jb_sw['DEPARTURE_DELAY'] > 0) & (jb_sw['CANCELLED'] == 0)))
 
     return jb_sw_p.groupby('AIRLINE')['delayed'].mean().to_frame()
 
@@ -470,7 +470,7 @@ def prop_delayed_by_airline_airport(jb_sw):
     airports_set = set(['ABQ', 'BDL', 'BUR', 'DCA', 'MSY', 'PBI', 'PHX', 'RNO', 'SJC', 'SLC'])
     jb_sw = jb_sw[jb_sw['ORIGIN_AIRPORT'].apply(lambda x: x in airports_set)]
 
-    jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
+    jb_sw_p = jb_sw.assign(delayed=((jb_sw['DEPARTURE_DELAY'] > 0) & (jb_sw['CANCELLED'] == 0)))
 
     return jb_sw_p.pivot_table(index = 'AIRLINE', columns = 'ORIGIN_AIRPORT', values = 'delayed', aggfunc = 'mean')
 
