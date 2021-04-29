@@ -299,7 +299,9 @@ def predict_null_arrival_delay(row):
     >>> set(out.unique()) - set([True, False]) == set()
     True
     """
-    return ...
+
+
+    return np.isnan(row['ELAPSED_TIME'])
 
 
 def predict_null_airline_delay(row):
@@ -320,7 +322,7 @@ def predict_null_airline_delay(row):
     True
     """
 
-    return ...
+    return np.isnan(row['AIR_SYSTEM_DELAY'])
 
 
 # ---------------------------------------------------------------------
