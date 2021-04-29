@@ -438,7 +438,9 @@ def prop_delayed_by_airline(jb_sw):
     True
     """
 
-    return ...
+    jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
+
+    return jb_sw_p.groupby('AIRLINE')['delayed'].mean().to_frame()
 
 
 def prop_delayed_by_airline_airport(jb_sw):
