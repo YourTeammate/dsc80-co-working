@@ -343,7 +343,33 @@ def perm4missing(flights, col, N):
     True
     """
 
-    return ...
+    obs_pt = (
+        flights
+        .assign(is_null = flights.DEPARTURE_DELAY.isnull())
+        .pivot_table(index = 'is_null', columns = col, aggfunc = 'size')
+        .apply(lambda x:x / x.sum(), axis=1)
+    )
+    obs_tvd = obs_pt.fillna(0).diff().iloc[-1].abs().sum() / 2
+
+
+    shuffled = flights.assign(is_null = flights.DEPARTURE_DELAY.isnull())
+    shuffle_col = shuffled['is_null'].values
+    tvds = []
+
+    for _ in range(N):
+        shuffled_col = np.random.permutation(shuffle_col)
+        shuffled['is_null'] = shuffled_col
+
+        pt = (
+            shuffled
+            .pivot_table(index = 'is_null', columns = col, aggfunc = 'size')
+            .apply(lambda x:x / x.sum(), axis=1)
+        )
+
+        tvds.append(pt.fillna(0).diff().iloc[-1].abs().sum() / 2)
+
+    return np.mean(tvds >= obs_tvd)
+    #return tvds
 
 
 def dependent_cols():
@@ -360,7 +386,7 @@ def dependent_cols():
     True
     """
 
-    return ...
+    return ['YEAR', 'DIVERTED', 'CANCELLATION_REASON']
 
 
 def missing_types():
