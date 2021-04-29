@@ -408,6 +408,8 @@ def missing_types():
     True
     """
 
+    ans = {'CANCELLED': np.NaN, 'CANCELLATION_REASON': 'MD', 'TAIL_NUMBER': 'MCAR', 'ARRIVAL_TIME': 'MAR'}
+
     return ...
 
 
