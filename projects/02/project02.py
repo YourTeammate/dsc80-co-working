@@ -465,7 +465,9 @@ def prop_delayed_by_airline_airport(jb_sw):
     True
     """
 
-    return ...
+    jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
+
+    return jb_sw_p.pivot_table(index = 'AIRLINE', columns = 'ORIGIN_AIRPORT', values = 'delayed', aggfunc = 'mean')
 
 
 # ---------------------------------------------------------------------
