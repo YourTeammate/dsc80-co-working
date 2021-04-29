@@ -437,6 +437,8 @@ def prop_delayed_by_airline(jb_sw):
     >>> len(out.columns) == 1
     True
     """
+    airports_set = set(['ABQ', 'BDL', 'BUR', 'DCA', 'MSY', 'PBI', 'PHX', 'RNO', 'SJC', 'SLC'])
+    jb_sw = jb_sw[jb_sw['ORIGIN_AIRPORT'].apply(lambda x: x in airports_set)]
 
     jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
 
@@ -464,6 +466,9 @@ def prop_delayed_by_airline_airport(jb_sw):
     >>> len(out.columns) == 6
     True
     """
+
+    airports_set = set(['ABQ', 'BDL', 'BUR', 'DCA', 'MSY', 'PBI', 'PHX', 'RNO', 'SJC', 'SLC'])
+    jb_sw = jb_sw[jb_sw['ORIGIN_AIRPORT'].apply(lambda x: x in airports_set)]
 
     jb_sw_p = jb_sw.assign(delayed = (jb_sw['DEPARTURE_DELAY'] > 0))
 
