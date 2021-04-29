@@ -494,7 +494,16 @@ def verify_simpson(df, group1, group2, occur):
     False
     """
 
-    return ...
+    rate1 = df.groupby(group1)[occur].mean()
+    rate1 = rate1.diff().iloc[-1]
+
+    rate2 = df.pivot_table(index = group1, columns = group2, values = occur, aggfunc = 'mean')
+    rate2 = rate2.diff().iloc[-1]
+
+    if rate1 > 0:
+        return (rate2 < 0).all()
+    else:
+        return (rate2 > 0).all()
 
 
 # ---------------------------------------------------------------------
