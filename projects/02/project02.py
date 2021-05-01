@@ -351,7 +351,6 @@ def perm4missing(flights, col, N):
     )
     obs_tvd = obs_pt.fillna(0).diff().iloc[-1].abs().sum() / 2
 
-
     shuffled = flights.assign(is_null = flights.DEPARTURE_DELAY.isnull())
     shuffle_col = shuffled['is_null'].values
     tvds = []
@@ -369,7 +368,6 @@ def perm4missing(flights, col, N):
         tvds.append(pt.fillna(0).diff().iloc[-1].abs().sum() / 2)
 
     return np.mean(tvds >= obs_tvd)
-    #return tvds
 
 
 def dependent_cols():
@@ -386,7 +384,7 @@ def dependent_cols():
     True
     """
 
-    return ['YEAR', 'DIVERTED', 'CANCELLATION_REASON']
+    return ['DAY_OF_WEEK', 'AIRLINE']
 
 
 def missing_types():
