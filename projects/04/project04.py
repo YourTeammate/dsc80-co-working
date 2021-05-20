@@ -30,8 +30,13 @@ def get_book(url):
     >>> book_string[:20] == '\\n\\n\\n\\n\\nProduced by Chu'
     True
     """
+
+    r = requests.get(url)
+    raw_text = r.text
+    start_index = re.search(r'(\*\*\* START OF THIS PROJECT GUTENBERG EBOOK.+\*\*\*)', raw_text).span()[1]
+    end_index = re.search(r'(\*\*\* END OF THIS PROJECT GUTENBERG EBOOK.+\*\*\*)', raw_text).span()[0]
     
-    return ...
+    return raw_text[start_index:end_index].replace('\r\n', '\n')
     
 # ---------------------------------------------------------------------
 # Question #2
