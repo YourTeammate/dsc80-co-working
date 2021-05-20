@@ -295,8 +295,7 @@ class NGramLM(object):
         >>> out[2]
         ('two', 'three')
         """
-        
-        return ...
+        return [tokens[i:i + self.N] for i in range(len(tokens) - self.N + 1)]
         
     def train(self, ngrams):
         """
