@@ -69,7 +69,7 @@ def tokenize(book_string):
     True
     """
 
-    text_list = re.split('(\W)', re.sub(r'\n{2,}', ' \x03 \x02 ', book_string).replace(r'\n{1}', ' '))
+    text_list = re.split('(\W)', re.sub(r'\n', ' ', re.sub(r'\n{2,}', ' \x03 \x02 ', "\n\n\n" + book_string + "\n\n\n")))
 
     # paragraphs = pd.Series(re.split('\n{2,}', book_string))
     #
