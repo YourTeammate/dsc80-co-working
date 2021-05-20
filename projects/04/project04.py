@@ -33,8 +33,8 @@ def get_book(url):
 
     r = requests.get(url)
     raw_text = r.text
-    start_index = re.search(r'(\*\*\* START OF THIS PROJECT GUTENBERG EBOOK.+\*\*\*)', raw_text).span()[1]
-    end_index = re.search(r'(\*\*\* END OF THIS PROJECT GUTENBERG EBOOK.+\*\*\*)', raw_text).span()[0]
+    start_index = re.search(r'(\*\*\* START OF.+\*\*\*)', raw_text).span()[1]
+    end_index = re.search(r'(\*\*\* END OF.+\*\*\*)', raw_text).span()[0]
     
     return raw_text[start_index:end_index].replace('\r\n', '\n')
     
