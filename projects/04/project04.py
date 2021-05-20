@@ -196,8 +196,15 @@ class UnigramLM(object):
         >>> unig.mdl.loc['one'] == 3 / 7
         True
         """
+        ser = pd.Series(tokens).value_counts()
+        tot_cnts = ser.sum()
 
-        return ...
+        def assign_prob(row):
+            return ser[row] / tot_cnts
+
+        res = pd.Series(ser.index).apply(assign_prob)
+        res.index = ser.index
+        return res
     
     def probability(self, words):
         """
@@ -216,8 +223,13 @@ class UnigramLM(object):
         >>> np.isclose(p, 0.12244897959, atol=0.0001)
         True
         """
-
-        return ...
+        if pd.Series(words).isin(self.mdl.index).all():
+            result = 1
+            for i in words:
+                result *= self.mdl[i]
+            return result
+        else:
+            return 0
         
     def sample(self, M):
         """
@@ -235,8 +247,7 @@ class UnigramLM(object):
         >>> np.isclose(s, 0.41, atol=0.05).all()
         True
         """
-
-        return ...
+        return ' '.join(np.random.choice(list(self.mdl.index), p=self.mdl.values, size=M))
         
     
 # ---------------------------------------------------------------------
