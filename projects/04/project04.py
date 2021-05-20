@@ -68,8 +68,29 @@ def tokenize(book_string):
     >>> '(' in tokens
     True
     """
+    paragraphs = pd.Series(re.split('\n{2,}', book_string))
 
-    return ...
+    def split_space(paragraph):
+        paragraph = '\x02 ' + paragraph + ' \x03'
+        paragraph = re.sub('\n', ' ', paragraph).strip()
+        paragraph = paragraph.split(' ')
+        # print(paragraph)
+        lst = []
+        for word in paragraph:
+            if re.search(r'\x02|\x03', word) is not None:
+                lst.append(word)
+            elif re.search('\W', word) is None:
+                lst.append(word)
+            else:
+                start, end = re.search('\W', word).span()
+                lst.append(word[:start])
+                lst.append(word[start])
+                if word[end:] == '':
+                    continue
+                else:
+                    lst.append(word[end:])
+        return lst
+    return paragraphs.apply(split_space).sum()
     
 # ---------------------------------------------------------------------
 # Question #3
