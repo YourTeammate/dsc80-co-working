@@ -73,22 +73,24 @@ def tokenize(book_string):
     def split_space(paragraph):
         paragraph = '\x02 ' + paragraph + ' \x03'
         paragraph = re.sub('\n', ' ', paragraph).strip()
-        paragraph = re.split(' ', paragraph)
-        lst = []
-        for word in paragraph:
-            if re.search(r'\x02|\x03', word) is not None:
-                lst.append(word)
-            elif re.search('\W', word) is None:
-                lst.append(word)
-            else:
-                start, end = re.search('\W', word).span()
-                lst.append(word[:start])
-                lst.append(word[start])
-                if word[end:] == '':
-                    continue
-                else:
-                    lst.append(word[end:])
-        return lst
+        text_list = re.split('(\W)', paragraph)
+        # paragraph = re.split(' ', paragraph)
+        # lst = []
+        # for word in paragraph:
+        #     if re.search(r'\x02|\x03', word) is not None:
+        #         lst.append(word)
+        #     elif re.search('\W', word) is None:
+        #         lst.append(word)
+        #     else:
+        #         start, end = re.search('\W', word).span()
+        #         lst.append(word[:start])
+        #         lst.append(word[start])
+        #         if word[end:] == '':
+        #             continue
+        #         else:
+        #             lst.append(word[end:])
+        return [i for i in text_list if (i != ' ' and i != '')]
+
     return paragraphs.apply(split_space).sum()
     
 # ---------------------------------------------------------------------
