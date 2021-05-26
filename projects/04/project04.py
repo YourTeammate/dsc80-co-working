@@ -352,7 +352,11 @@ class NGramLM(object):
         True
         """
         ngrams_wd = self.create_ngrams(words)
-        #n1grams_wd = [x[:-1] for x in ngrams_wd]
+        if len(ngrams_wd) == 0:
+            if len(words) == 0:
+                return 0
+            else:
+                return self.prev_mdl.probability(words)
 
         if pd.Series(ngrams_wd).isin(self.mdl['ngram']).all():
             result = 1
