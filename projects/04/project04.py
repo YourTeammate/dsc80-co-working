@@ -295,7 +295,7 @@ class NGramLM(object):
         >>> out[2]
         ('two', 'three')
         """
-        return [tokens[i:i + self.N] for i in range(len(tokens) - self.N + 1)]
+        return [tuple(tokens[i:i + self.N]) for i in range(len(tokens) - self.N + 1)]
         
     def train(self, ngrams):
         """
@@ -314,18 +314,20 @@ class NGramLM(object):
         """
 
         # ngram counts C(w_1, ..., w_n)
-        ...
+        ngrams_ct = pd.Series(ngrams).value_counts()
         # n-1 gram counts C(w_1, ..., w_(n-1))
-        ...
+        n1grams = [x[:-1] for x in ngrams]
+        n1grams_ct = pd.Series(n1grams).value_counts()
 
         # Create the conditional probabilities
-        ...
+        def assign_prob(row):
+            return ngrams_ct[row] / n1grams_ct[row[:-1]]
         
         # Put it all together
+        res = pd.Series(ngrams_ct.index).apply(assign_prob)
+        res.index = ngrams_ct.index
 
-        ...
-
-        return ...
+        return res
     
     def probability(self, words):
         """
@@ -344,8 +346,16 @@ class NGramLM(object):
         >>> bigrams.probability('one two five'.split()) == 0
         True
         """
+        ngrams_wd = self.create_ngrams(words)
+        #n1grams_wd = [x[:-1] for x in ngrams_wd]
 
-        return ...
+        if pd.Series(ngrams_wd).isin(self.mdl.index).all():
+            result = 1
+            for i in ngrams_wd:
+                result *= self.mdl[i]
+            return result
+        else:
+            return 0
 
     def sample(self, M):
         """
