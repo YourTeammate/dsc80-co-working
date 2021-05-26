@@ -380,7 +380,6 @@ class NGramLM(object):
         >>> samp = bigrams.sample(3)
         >>> len(samp.split()) == 4  # don't count the initial START token.
         True
-        >>> samp
         >>> samp[:2] == '\\x02 '
         True
         >>> set(samp.split()) <= {'\\x02', '\\x03', 'one', 'two', 'three', 'four'}
