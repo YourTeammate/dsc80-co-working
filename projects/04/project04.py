@@ -329,7 +329,8 @@ class NGramLM(object):
         # Put it all together
         ans = pd.DataFrame()
         ans['ngram'] = pd.Series(ngrams_ct.index)
-        ans['n1gram'] = pd.Series(n1grams_ct.index)
+        n1grams_list = [x[:-1] for x in list(ngrams_ct.index)]
+        ans['n1gram'] = pd.Series(n1grams_list)
         ans['prob'] = prob
 
         return ans
@@ -379,6 +380,7 @@ class NGramLM(object):
         >>> samp = bigrams.sample(3)
         >>> len(samp.split()) == 4  # don't count the initial START token.
         True
+        >>> samp
         >>> samp[:2] == '\\x02 '
         True
         >>> set(samp.split()) <= {'\\x02', '\\x03', 'one', 'two', 'three', 'four'}
@@ -391,16 +393,22 @@ class NGramLM(object):
                 return self.prev_mdl.sample(M).split()
 
             tokens = token_sample(M-1)
+            if len(tokens) > M-1:
+                return tokens
 
-            # np.random.choice(list(self.mdl.index), p=self.mdl.values, size=M)
-            last_n1gram = tuple(tokens[:- (self.N - 1)])
+            last_n1gram = tuple(tokens[-(self.N - 1):])
             pool = self.mdl[self.mdl['n1gram'] == last_n1gram]
+            # print(tokens[-(self.N - 1):])
+            if pool.shape[0] == 0:
+                return tokens + ['\x03', '\x02'] + self.prev_mdl.sample(self.N - 1).split()
+
             cur_token = np.random.choice(pool['ngram'].values, p=pool['prob'].values, size=1)
 
-            return tokens + [cur_token[-1]]
-        
+            return tokens + [cur_token[-1][-1]]
+
         # Transform the tokens to strings
-        ans = ' '.join(token_sample(M))
+        tks = ['\x02'] + token_sample(M)[:M]
+        ans = ' '.join(tks)
 
         return ans
 
