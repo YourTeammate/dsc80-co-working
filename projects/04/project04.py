@@ -397,7 +397,7 @@ class NGramLM(object):
             pool = self.mdl[self.mdl['n1gram'] == last_n1gram]
             cur_token = np.random.choice(pool['ngram'].values, p=pool['prob'].values, size=1)
 
-            return tokens + [cur_token]
+            return tokens + [cur_token[-1]]
         
         # Transform the tokens to strings
         ans = ' '.join(token_sample(M))
