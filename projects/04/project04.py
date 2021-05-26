@@ -328,8 +328,8 @@ class NGramLM(object):
         
         # Put it all together
         ans = pd.DataFrame()
-        ans['ngram'] = ngrams_ct.index
-        ans['n1gram'] = n1grams_ct.index
+        ans['ngram'] = pd.Series(ngrams_ct.index)
+        ans['n1gram'] = pd.Series(n1grams_ct.index)
         ans['prob'] = prob
 
         return ans
