@@ -386,12 +386,23 @@ class NGramLM(object):
         """
 
         # Use a helper function to generate sample tokens of length `length`
-        ...
+        def token_sample(M):
+            if M < self.N:
+                return self.prev_mdl.sample(M).split()
+
+            tokens = token_sample(M-1)
+
+            # np.random.choice(list(self.mdl.index), p=self.mdl.values, size=M)
+            last_n1gram = tuple(tokens[:- (self.N - 1)])
+            pool = self.mdl[self.mdl['n1gram'] == last_n1gram]
+            cur_token = np.random.choice(pool['ngram'].values, p=pool['prob'].values, size=1)
+
+            return tokens + [cur_token]
         
         # Transform the tokens to strings
-        ...
+        ans = ' '.join(token_sample(M))
 
-        return ...
+        return ans
 
 
 # ---------------------------------------------------------------------
