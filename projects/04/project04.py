@@ -322,12 +322,17 @@ class NGramLM(object):
         # Create the conditional probabilities
         def assign_prob(row):
             return ngrams_ct[row] / n1grams_ct[row[:-1]]
+
+        prob = pd.Series(ngrams_ct.index).apply(assign_prob)
+        # prob.index = ngrams_ct.index
         
         # Put it all together
-        res = pd.Series(ngrams_ct.index).apply(assign_prob)
-        res.index = ngrams_ct.index
+        ans = pd.DataFrame()
+        ans['ngram'] = ngrams_ct.index
+        ans['n1gram'] = n1grams_ct.index
+        ans['prob'] = prob
 
-        return res
+        return ans
     
     def probability(self, words):
         """
